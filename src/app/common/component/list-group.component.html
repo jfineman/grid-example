@@ -1,0 +1,27 @@
+<form name="list-group-form" #form="ngForm">
+    <ul class="list-group">
+        <li class="list-group-item ui-iggrid-header ui-widget-header">
+            <div>
+                <input *ngIf="enableSelectAll" name="all-selected" [disabled]="readonly" type="checkbox" [(ngModel)]="allSelected" (click)="toggleSelectAll()">
+                <span>{{title}}</span>
+                <ng-content select=".list-group-header"></ng-content>
+            </div>
+        </li>
+    </ul>
+
+    <div id="list-group-content" [style.max-height.px]="height" >
+        <ul class="list-group">
+            <li *ngFor="let item of data; let odd=odd; let i=index;" class="list-group-item" [ngClass]="{'ui-active': item.isSelected, 'altrecord': odd}"
+                ngbTooltip="{{required && !oneSelected ? requiredMessage : item.customError}}" (click)="selectOne($event, item, i)">
+                <input name="{{item.Text}}-{{i}}" type="checkbox" [disabled]="readonly" [(ngModel)]="item.isSelected" (click)="selectAtLeastOne(item)"
+                    [ngClass]="{'error': (required && !oneSelected) || item.customError}">
+                    <div class="ellipse" title="{{item.Text}}" [style.width]="'80%'">
+                        <span>
+                            {{item.Text}}
+                        </span>
+                    </div>
+            </li>
+        </ul>
+        <div *ngIf="!data" class="list-group-loading"></div>
+    </div>
+</form>

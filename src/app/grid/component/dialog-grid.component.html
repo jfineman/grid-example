@@ -1,0 +1,42 @@
+<div class="input-group">
+    <input 
+        class="form-control" 
+        #model="ngModel"
+        [name]="name" 
+        [(ngModel)]="myModel" 
+        [title]="myModel"
+        [required]="columnContext.column.required"
+        [ngbTooltip]="displayTooltipMessage(model)"
+        [ngClass]="{'custom-error': model.hasError('customError'), 'warning': warningMessage}"
+        [readonly]="true"
+        tabindex="{{columnContext.column.required ? 0 : -1}}" >
+    
+    <div class="input-group-addon" (click)="open(content)" [hidden]="columnContext.column.disabled || columnContext.column.readonly">
+        <i id="{{name}}-dialog" class="fa fa-ellipsis-h" aria-hidden="true"></i>
+    </div>
+</div>
+
+
+<ng-template #content let-close="close" let-dismiss="dismiss">
+    <div class="modal-header" *ngIf="columnContext.column.dialogHeader">
+        <h4 class="modal-title">{{columnContext.column.dialogHeader}}</h4>
+    </div>
+    <div class="modal-body">
+          <form #f="ngForm">
+                <list-group 
+                    [parent]="f"
+                    [enableSelectAll]="false"
+                    [allSelected]="false"
+                    [title]="columnContext.column.name" 
+                    [height]="columnContext.column.height || 200" 
+                    [required]="columnContext.column.required"
+                    [data]="columnContext.column.data" 
+                    (selected)="onSelectItem($event)">
+                </list-group>
+          </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancel()">Close</button>
+        <button [disabled]="f.form.invalid || f.form.pristine" type="button" class="btn btn-primary" (click)="save()">Update</button>
+    </div>
+</ng-template>

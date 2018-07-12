@@ -1,0 +1,36 @@
+<div *ngIf="result">
+    <div *ngIf="result.IsSuccess">
+        <img src='/Images/Icon_Success.png'>&nbsp;
+        <span [innerHtml]="result.customMessage"></span>
+    </div>
+
+    <div *ngIf="!result.IsSuccess">
+        <font color='red'>{{result.Information || result.ItemName || result.Message || result.customMessage}}</font>
+    </div>
+
+    <div *ngIf="!result.IsSuccess && result.Messages">       
+        <font *ngFor="let message of result.Messages" color='red'>{{message}}</font>
+    </div>
+
+    <div *ngIf="result.ItemTooltips && result.ItemTooltips.length">
+        <span>Review <font color='red'>{{result.ItemTooltips.length}} Error(s) (in red)</font></span>
+        <span *ngFor="let item of result.ItemTooltips">
+            <br/> 
+            <font style="font-size:small" color="red">{{item.PropertyName}}: {{item.Message}}</font>
+        </span>
+    </div>
+
+    <div *ngIf="result.GridTooltips && result.GridTooltips.length">
+        <span>Review <font color='red'>{{result.GridTooltips.length}} Error(s) (in red)</font></span>
+        <span *ngFor="let item of result.GridTooltips">
+            <br/> 
+            <font style="font-size:small" color="red">{{item.PropertyName}}: {{item.Message}}</font>
+        </span>
+    </div>
+</div>
+
+<div [hidden]="!error">
+    <div class="alert alert-danger" role="alert">        
+        <div style="font-size: small">{{error | json}}</div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+﻿
+    <div class="modal-header" *ngIf="columnContext.column.dialogHeader">
+        <h4 class="modal-title">{{columnContext.column.dialogHeader}}</h4>
+    </div>
+    <div class="modal-body">
+        <star-grid 
+            [columns]="columnContext.column.columns" 
+            [rows]="columnContext.column.data" 
+            [options]="_options"
+            (onViewFilter)="onViewFilter($event)" >
+        </star-grid>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancel()">Close</button>
+        <button [disabled]="gridComponent.tableForm.invalid || gridComponent.tableForm.pristine" type="button" class="btn btn-primary"
+            (click)="save()">Update</button>
+    </div>

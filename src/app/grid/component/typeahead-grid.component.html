@@ -1,0 +1,23 @@
+
+        <input 
+          [id]="name"
+          [name]="name" 
+          type="text" 
+          class="form-control " 
+          #typeahead
+          #model="ngModel"
+          [title]="displayFn(myModel) || ''"
+          [(ngModel)]="myModel"
+          [ngClass]="{'custom-error': model.hasError('customError'), 'warning': warningMessage}"
+          [editable]="false"
+          [readonly]="columnContext.column.readonly"
+          [disabled]="columnContext.column.disabled || columnContext.column.readonly"
+          [ngbTypeahead]="search" 
+          [required]="columnContext.column.required"        
+          [resultFormatter]="resultFn" 
+          [inputFormatter]="displayFn"
+          [ngbTooltip]="displayTooltipMessage(model)"
+          (keydown)="onKeydown($event)"
+          (selectItem)="onSelectItem($event.item)" />
+
+

@@ -1,0 +1,17 @@
+
+        <input [name]="name" 
+          type="text" 
+          class="form-control inline-image" 
+          #typeahead
+          #model="ngModel"
+          [(ngModel)]="_model"
+          (ngModelChange)="onModelChange.emit($event)"
+          [editable]="false"
+          [ngbTypeahead]="search" 
+          [required]="required"     
+          [placeholder]="placeholder" 
+          [disabled]="disabled || readonly"        
+          [resultFormatter]="resultFn" 
+          [inputFormatter]="displayFn"
+          [ngbTooltip]="model.hasError('customError') ? model.getError('customError').message : null"
+          (selectItem)="onSelectItem($event)" />

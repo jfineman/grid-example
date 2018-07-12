@@ -1,0 +1,21 @@
+﻿<div class="input-group">
+    <input class="form-control"
+           #model="ngModel"
+           [name]="name"
+           [(ngModel)]="myModel"
+           [title]="myModel"
+           [required]="columnContext.column.required"
+           [ngbTooltip]="displayTooltipMessage(model)"
+           [ngClass]="{'custom-error': model.hasError('customError'), 'warning': warningMessage}"
+           [readonly]="true"
+           tabindex="{{columnContext.column.required ? 0 : -1}}">
+
+    <div class="input-group-addon" (click)="open(columnContext)" [hidden]="columnContext.column.disabled || columnContext.column.readonly">
+        <i id="{{name}}-dialog" class="fa fa-ellipsis-h" aria-hidden="true"></i>
+    </div>
+
+</div>
+
+
+
+

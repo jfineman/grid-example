@@ -1,0 +1,24 @@
+<div>
+    <div class="input-group">
+        <input 
+            class="form-control" 
+            placeholder="mm/dd/yyyy" 
+            [name]="name" 
+            [(ngModel)]="myDate" 
+            #model="ngModel"
+            [ngbTooltip]="datepickerTooltip"
+            (ngModelChange)="dateChangeEvt($event)"
+            ngbDatepicker         
+            [markDisabled]="markDisabled"
+            [minDate]="minDate"
+            [maxDate]="maxDate"
+            [required]="required"
+            [disabled]="disabled || readonly"
+            #myDatepicker="ngbDatepicker">
+        
+        <div [ngbTooltip]="calendarTooltip" 
+            class="input-group-addon" (click)="onOpenCalendar();">
+            <i id="{{name}}-calendar" class="fa fa-calendar" aria-hidden="true"></i>
+        </div>
+    </div>
+</div>

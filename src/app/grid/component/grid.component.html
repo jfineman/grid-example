@@ -1,0 +1,183 @@
+<form #tableForm="ngForm" novalidate>
+    <div class="header-container" [ngClass]="{'scrollbar-alignment': _isScrollbarVisible}">
+        <table class="table table-bordered grid-header">
+                <thead>
+                    <tr class="header-row" *ngIf="!options.groupHeader">
+                        <ng-container *ngFor="let column of columns">
+                            <th *ngIf="!column.hidden"
+                                [style.width]="column.width"
+                                (click)="sortGrid(column)" >
+    
+                                <span>{{column.name}}</span>&nbsp;<span *ngIf="column.required" [style.color]="'red'">*</span>&nbsp;
+                                <i *ngIf="column.prop !== 'caret' && _fieldNameSort === column.prop" [ngClass]="{'fa-arrow-down': !_isSortAsc, 'fa-arrow-up': _isSortAsc}" class="fa sort-icon" aria-hidden="true"></i>
+                            
+                                <ng-template [ngTemplateOutlet]="column.headerContent"></ng-template>
+                            </th>
+                        </ng-container>
+                    </tr>
+                    <ng-container *ngIf="options.groupHeader">
+                        <tr class="header-row">
+                            <ng-container *ngFor="let column of _columnHeaders">
+                                <th *ngIf="!column.hidden" 
+                                    (click)="sortGrid(column, !column.header)"
+                                    [attr.rowspan]="column.header ? 1 : 2" 
+                                    [attr.colspan]="column.header ? 2 : 1" 
+                                    [style.width]="column.headerWidth || column.width">
+
+                                    {{column.header || column.name}}&nbsp;<span *ngIf="column.required" [style.color]="'red'">*</span>&nbsp;
+                                    <i *ngIf="column.prop !== 'caret' && !column.header && _fieldNameSort === column.prop" [ngClass]="{'fa-arrow-down': !_isSortAsc, 'fa-arrow-up': _isSortAsc}" class="fa sort-icon" aria-hidden="true"></i>
+                                
+                                    <ng-template [ngTemplateOutlet]="column.headerContent"></ng-template>
+                                </th>
+                            </ng-container>
+                        </tr>
+                        <tr class="header-row">
+                            <ng-container *ngFor="let column of columns">
+                                <th *ngIf="column.prop !== 'caret' && column.header && !column.hidden" (click)="sortGrid(column)">
+
+                                    {{column.name}} <span *ngIf="column.required" [style.color]="'red'">*</span>&nbsp;
+                                    <i *ngIf="_fieldNameSort === column.prop" [ngClass]="{'fa-arrow-down': !_isSortAsc, 'fa-arrow-up': _isSortAsc}" class="fa sort-icon" aria-hidden="true"></i>
+                                    
+                                    <ng-template [ngTemplateOutlet]="column.headerContent"></ng-template>
+                                </th>
+                            </ng-container>
+                        </tr>
+                    </ng-container>
+
+                    <ng-container *ngIf="options.enableFilters">
+                        <ng-container *ngFor="let column of columns; let last = last; let idx = index;">
+                            <th *ngIf="!column.hidden" [style.height.px]="'20'">
+                                <input 
+                                    *ngIf="column.prop !== 'checkbox' && column.prop !== 'caret'"
+                                    placeholder="Contains..." 
+                                    star-column-filter
+                                    [fieldName]="column.formatted || column.prop" 
+                                    type="text" 
+                                    class="form-control filter-input" 
+                                    (keyup)="filterGrid()">
+                            </th>
+                        </ng-container>
+                    </ng-container>
+        
+                    <tr *ngIf="editMode !== 1 && options.canAdd && !options.hideAddNewRowBar">
+                        <th [style.text-align]="'left'" [attr.colspan]="getTotalColumnsLength()">
+                            <div id="star-grid-add-row" (click)="onAddRow()">
+                                <span>
+                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                    {{options.addNewRowMessage}}
+                                </span>
+                            </div>
+                        </th>
+                    </tr>
+                    <tr id="add-row-fields" *ngIf="editMode === 1 && options.canAdd">
+                        <ng-container *ngFor="let column of columns; let last = last; let idx = index;">
+                            <th *ngIf="!column.hidden" >
+                                <ng-template star-datatable-column [columnContext]="{column: column, row: newRow, formGroup: tableForm.form, parentId: parentId }"></ng-template>
+            
+                                <div [style.position]="'relative'" *ngIf="isLastVisibleColumn(column)">
+                                    <div class="star-grid-header-buttoncontainer">
+                                        <input type="button" (click)="cancel()" class="btn btn-sm btn-primary active" title="Stop editing and do not update" value="Close">
+                                        <input type="button" (click)="updateValue()" class="btn btn-sm btn-primary active" [disabled]="tableForm.form.pristine || tableForm.form.invalid" value="Done">
+                                    </div>
+                                </div>
+                            </th>
+                        </ng-container>
+                    </tr>
+                </thead>
+        </table>
+    </div>
+    <div class="grid-container" [style.height]="options.height">
+        <table class="table table-bordered">            
+            <colgroup>
+                <col *ngFor="let column of getVisibleColumns()" [style.width]="column.width ||  calcWidthByHeader(column.headerWidth)">
+            </colgroup>
+            <tbody>
+                <tr *ngIf="!hasRows()">
+                    <td [attr.colspan]="getTotalColumnsLength()" [style.color]="'red'">
+                        <p>{{options.noDataMessage}}</p>
+                    </td>
+                </tr>
+               <ng-container *ngFor="let row of rows; let i = index">
+                    <tr
+                        (click)="onEditRow(row)" 
+                        [ngClass]="{
+                            'parent-row': row.expanded,
+                            'locked-row': !options.canEdit || (options.isRowEditable && !options.isRowEditable(row)), 
+                            'selected-row': _selectedRowKey === row[options.primaryKey] 
+                        }">
+                        
+                        <ng-container *ngFor="let column of columns; let last = last; let i = index">
+                            <td [star-grid-cell]="{column: column, row: row, formGroup: tableForm.form }" *ngIf="!column.hidden">
+                                <div                                  
+                                    class="ellipse" 
+                                    title="{{row[column.formatted] || row[column.prop] || ''}}"
+                                    [ngClass]="{
+                                        'parent-row-content': options.childGrid,
+                                        'deleted-record': row.transactionType === 'deleterow', 'altered-record': row.transactionType === 'row' || row.transactionType === 'newrow'
+                                    }"
+                                    *ngIf="row[options.primaryKey] !== copyOfRow[options.primaryKey]">    
+             
+                                    <ng-container *ngIf="column.prop ==='checkbox'">
+                                        <checkbox-grid 
+                                            [myForm]="tableForm.form" 
+                                            [row]="row" 
+                                            [customMessage]="options.checkboxMessage"
+                                            (onCheckEvent)="checkboxEventHandler($event)">
+                                        </checkbox-grid>
+                                    </ng-container>
+    
+                                    <ng-container *ngIf="column.prop !=='checkbox'">
+                                        <ng-template [ngTemplateOutlet]="column.customTemplate || defaultTemplate" [ngTemplateOutletContext]="{columnContext: {column: column, row: row, formGroup: tableForm.form, parentId: parentId }}"></ng-template>   
+                                    </ng-container>
+    
+        
+                                    <ng-template #defaultTemplate> {{row[column.formatted] || row[column.prop]}} </ng-template>                            
+        
+                                </div>
+                                <div *ngIf="row[options.primaryKey] === copyOfRow[options.primaryKey]">
+
+                                    <div *ngIf="!column.component" class="ellipse">
+                                        <ng-template ngIf="column.customTemplate && !column.component" [ngTemplateOutlet]="column.customTemplate" [ngTemplateOutletContext]="{columnContext: {column: column, row: row, formGroup: tableForm.form, parentId: parentId }}"></ng-template>   
+                                    </div>
+
+                                    <ng-template star-datatable-column [columnContext]="{column: column, row: row, formGroup: tableForm.form, parentId: parentId}"></ng-template>
+        
+                                    <div [style.position]="'relative'" *ngIf="isLastVisibleColumn(column)">
+                                        <div class="star-grid-buttoncontainer">
+                                            <input type="button" (click)="cancel()" class="btn btn-sm btn-primary active" title="Stop editing and do not update" value="Close">
+                                            <input type="button" (click)="updateValue()" class="btn btn-sm btn-primary active" [disabled]="tableForm.form.pristine || tableForm.form.invalid" value="Done">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div [style.position]="'relative'" *ngIf="options.canDelete && isLastVisibleColumn(column) && (!options.isDeleteIconVisible || options.isDeleteIconVisible(row))">
+                                    <span class="hover-show" *ngIf="row[options.primaryKey] !== copyOfRow[options.primaryKey]" (click)="deleteRow($event, row)" [title]="options.deleteIconTooltip || 'Delete row'">
+                                        <i class="fa fa-times-circle-o" aria-hidden="true" ></i>
+                                    </span>
+                                </div>
+                            </td>
+                        </ng-container>
+                    </tr>
+                    <tr *ngIf="options.childGrid && row.expanded" class="child-row">
+                        <td [attr.colspan]="getTotalColumnsLength()">
+                            <hierarchical-grid 
+                                [columnContext]="{column: options.childGrid, row: row, formGroup: tableForm.form, parentId: row[options.primaryKey]}"
+                                (onChildRowAdded)="onChildRowAdded.next($event)"
+                                (onChildRowUpdate)="onChildRowUpdate.next($event)"
+                                (onChildRowAdd)="onChildRowAdd.next($event)">
+                            </hierarchical-grid>
+                        </td>
+                    </tr>
+               </ng-container>
+            </tbody>
+        </table>
+    </div>
+    <div id="grid-footer">
+        <h5>
+            <span class="badge badge-default">{{rows.length}} records</span>
+        </h5>
+    </div>
+</form>
+
+<ng-template #caretTemplate let-columnContext="columnContext">
+    <div><i class="expand-icon" [ngClass]="{'expanded': columnContext.row.expanded}" (click)="expandRow($event, columnContext.row)"></i></div>
+</ng-template>

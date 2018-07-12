@@ -1,0 +1,28 @@
+.inline-image {
+    padding-right: 2.25rem;
+    background-repeat: no-repeat;
+    background-position: center right .5625rem;
+    -webkit-background-size: 1rem 1rem;
+    background-size: 1rem 1rem;
+    /* background-image: url(../../../../../../Images/chevron-down-grey.png); */
+}
+
+:host{
+    position: relative;
+    display: block;
+}
+
+:host /deep/ .dropdown-menu[role="listbox"]{
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;    
+    top: 30px !important;
+    left: 0 !important;
+    width:100%;
+}
+
+:host /deep/ .dropdown-item{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

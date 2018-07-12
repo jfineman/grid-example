@@ -1,0 +1,12 @@
+﻿<div [style.margin-left.px]="'35'">
+    <star-grid 
+        [parentId]="columnContext.parentId"
+        [columns]="columns" 
+        [rows]="rows" 
+        [options]="options"
+        (onRowUpdate)="onRowUpdate($event)"
+        (onViewUpdate)="onViewUpdate($event)"
+        (onRowAdded)="onRowAdded($event)"
+        (onRowAdd)="onRowAdd($event)" >
+    </star-grid>
+</div>
