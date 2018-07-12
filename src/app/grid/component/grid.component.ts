@@ -33,7 +33,7 @@ export class GridComponent implements OnChanges {
     private _rows: ITransaction[];
     private _columns: IColumn[] = [];
     private _columnHeaders: IColumn[] = [];
-    private _isScrollbarVisible: boolean;
+    // private _isScrollbarVisible: boolean;
     transactions: Array<ITransaction> = new Array<ITransaction>();
     copyOfRow: ITransaction = {} as ITransaction;
     copyOfRows: ITransaction[] = [];
@@ -380,7 +380,7 @@ export class GridComponent implements OnChanges {
                 this.onRowAdded.next(row);
                 this.newRow = Object.assign({}, this.copyOfRow);
 
-                this.isScrollBarVisible(() => $('.grid-container:first > table > tbody > tr:last-child')[0].scrollIntoView());
+                // this.isScrollBarVisible(() => $('.grid-container:first > table > tbody > tr:last-child')[0].scrollIntoView());
                 break;
 
             case EditMode.Edit:
@@ -410,7 +410,7 @@ export class GridComponent implements OnChanges {
 
         this.onViewFilter.next(this.rows);
 
-        this.isScrollBarVisible();
+        // this.isScrollBarVisible();
     }
 
     sortGrid(column: IColumn = this.options.defaultColumnSort, isSortOn: boolean = true, ) {
@@ -444,19 +444,19 @@ export class GridComponent implements OnChanges {
             return 0;
         });
     }
-    private isScrollBarVisible(callBackFn?: Function) {
-        setTimeout(() => {
-            let $element = $(this._elRef.nativeElement).find('.grid-container');
+    // private isScrollBarVisible(callBackFn?: Function) {
+    //     setTimeout(() => {
+    //         let $element = $(this._elRef.nativeElement).find('.grid-container');
 
-            if ($element.length) {
-                let scrollHeight = $element.get(0).scrollHeight;
-                let height = $element.height();
-                this._isScrollbarVisible = $element.get(0) ? scrollHeight > height : false;
+    //         if ($element.length) {
+    //             let scrollHeight = $element.get(0).scrollHeight;
+    //             let height = $element.height();
+    //             this._isScrollbarVisible = $element.get(0) ? scrollHeight > height : false;
 
-                if (this._isScrollbarVisible && callBackFn) callBackFn();
-            }
-        })
-    }
+    //             if (this._isScrollbarVisible && callBackFn) callBackFn();
+    //         }
+    //     })
+    // }
 
     private updateTransactions(row: ITransaction) {
         let idx = this.transactions.findIndex((t: ITransaction) => t[this.options.primaryKey] === row[this.options.primaryKey]);
@@ -585,7 +585,7 @@ export class GridComponent implements OnChanges {
                 this.onAddRow();
             }
             this.copyOfRows = this._utilService.copyArray(this.rows);
-            this.isScrollBarVisible();
+            // this.isScrollBarVisible();
         }
 
         if (this.options.checkBoxes)

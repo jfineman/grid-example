@@ -7,6 +7,8 @@ import { GridOptions } from './grid/contract/grid-options';
 import { Todo } from './todo';
 import { TodoService } from './todo.service';
 import { InputGridComponent } from './grid/component/input-grid.component';
+import { TypeaheadGridComponent } from './grid/component/typeahead-grid.component';
+import { ComboItem } from './common/contract/combo-item';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +16,7 @@ import { InputGridComponent } from './grid/component/input-grid.component';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements IGrid, OnInit {
-  rows: Todo[];
+  rows: Todo[] = [];
   columns: IColumn[];
   gridComponent: GridComponent;
   options: GridOptions = new GridOptions();;
@@ -23,8 +25,8 @@ export class AppComponent implements IGrid, OnInit {
 
   ngOnInit(): void {
     this.options.primaryKey = 'id';
-    
-    this.columns =  [
+
+    this.columns = [
       {
         name: 'User Id',
         prop: 'userId',
@@ -43,7 +45,12 @@ export class AppComponent implements IGrid, OnInit {
       {
         name: 'Completed',
         prop: 'completed',
-        component: InputGridComponent
+        id: 'completed',
+        data: [
+          new ComboItem<string>('true', "true"),
+          new ComboItem<string>('false', "false")
+        ],
+        component: TypeaheadGridComponent
       }
     ]
 
