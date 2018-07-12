@@ -6,6 +6,7 @@ import { GridComponent } from './grid/component/grid.component';
 import { GridOptions } from './grid/contract/grid-options';
 import { Todo } from './todo';
 import { TodoService } from './todo.service';
+import { InputGridComponent } from './grid/component/input-grid.component';
 
 @Component({
   selector: 'app-root',
@@ -16,11 +17,36 @@ export class AppComponent implements IGrid, OnInit {
   rows: Todo[];
   columns: IColumn[];
   gridComponent: GridComponent;
-  options: GridOptions;
+  options: GridOptions = new GridOptions();;
 
   constructor(private _todoService: TodoService) { }
 
   ngOnInit(): void {
+    this.options.primaryKey = 'id';
+    
+    this.columns =  [
+      {
+        name: 'User Id',
+        prop: 'userId',
+        component: InputGridComponent
+      },
+      {
+        name: 'Todo Id',
+        prop: 'id',
+        component: InputGridComponent
+      },
+      {
+        name: 'Title',
+        prop: 'title',
+        component: InputGridComponent
+      },
+      {
+        name: 'Completed',
+        prop: 'completed',
+        component: InputGridComponent
+      }
+    ]
+
     this._todoService.getTodos()
       .subscribe((todos: Todo[]) => {
         this.rows = todos;
